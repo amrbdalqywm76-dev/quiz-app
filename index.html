@@ -1,0 +1,1539 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار باب الفاعل الشامل - النحو العربي</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 10px; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-xl shadow-md shadow-brand-500/20">
+                    <i class="fa-solid me-0 fa-book-quran"></i>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold text-slate-900 leading-tight">اختبار باب الفاعل الشامل</h1>
+                    <p class="text-xs text-slate-500">منظومة الاختبارات التفاعلية - 100 سؤال</p>
+                </div>
+            </div>
+
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <button id="nav-player-btn" onclick="switchTab('player')" class="px-4 py-2 text-sm font-semibold rounded-lg bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-play text-xs"></i>
+                    <span>أداء الاختبار</span>
+                </button>
+                <button id="nav-editor-btn" onclick="switchTab('editor')" class="px-4 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                    <span>إدارة والتحكم بالأشكال والأسئلة</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- ================= PLAYER VIEW ================= -->
+        <div id="player-view" class="space-y-6">
+            
+            <!-- START / SETUP CARD (Shown when test not started) -->
+            <div id="quiz-start-card" class="bg-white rounded-2xl p-6 sm:p-10 border border-slate-200 shadow-sm text-center max-w-3xl mx-auto my-8">
+                <div class="w-20 h-20 bg-brand-100 text-brand-600 rounded-full flex items-center justify-center mx-auto mb-6 text-3xl">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-900 mb-3">اختبار باب الفاعل (100 سؤال)</h2>
+                <p class="text-slate-600 mb-6 leading-relaxed max-w-xl mx-auto">
+                    يحتوي هذا الاختبار على أسئلة الاختيار من متعدد، الفراغات، صح وخطأ، والأحكام والنصوص الإعرابية. **تنبيه:** لن تظهر لك الإجابات الصحيحة والدرجات إلا بعد الانتهاء من إجابة كامل الاختبار.
+                </p>
+
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-lg mx-auto mb-8">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div class="text-xl font-bold text-slate-800" id="stat-total-q">100</div>
+                        <div class="text-xs text-slate-500">إجمالي الأسئلة</div>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div class="text-xl font-bold text-slate-800">لا يوجد</div>
+                        <div class="text-xs text-slate-500">مؤقت ملزم</div>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div class="text-xl font-bold text-slate-800">مباشر</div>
+                        <div class="text-xs text-slate-500">نتيجة فورية بنهاية الاختبار</div>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div class="text-xl font-bold text-slate-800">100%</div>
+                        <div class="text-xs text-slate-500">شامل للباب</div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                    <button onclick="startQuiz(false)" class="w-full sm:w-auto px-8 py-3.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-600/30 transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-circle-play"></i>
+                        <span>ابدأ الاختبار بالكامل (100 سؤال)</span>
+                    </button>
+                    <button onclick="startQuiz(true)" class="w-full sm:w-auto px-6 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-shuffle"></i>
+                        <span>عشوائي (25 سؤالاً فقط)</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ACTIVE QUIZ PANEL (Hidden initially) -->
+            <div id="quiz-active-panel" class="hidden grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+                
+                <!-- Main Question Area -->
+                <div class="lg:col-span-3 space-y-4">
+                    
+                    <!-- Progress Header -->
+                    <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex flex-wrap items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-md bg-brand-100 text-brand-800" id="q-counter-badge">سؤال 1 من 100</span>
+                            <span class="text-xs font-medium text-slate-500" id="q-category-tag">قسم: اختيار من متعدد</span>
+                        </div>
+                        
+                        <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-2 text-slate-600 text-sm font-semibold">
+                                <i class="fa-regular fa-clock text-brand-600"></i>
+                                <span id="timer-display">00:00</span>
+                            </div>
+                            <button onclick="toggleBookmarkCurrent()" id="bookmark-btn" class="text-slate-400 hover:text-amber-500 transition-colors p-1" title="مراجعة لاحقاً">
+                                <i class="fa-bookmark text-lg font-regular"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+                        <div id="progress-bar-fill" class="bg-brand-600 h-full transition-all duration-300 w-0"></div>
+                    </div>
+
+                    <!-- Question Box -->
+                    <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm">
+                        <h3 id="question-text" class="text-lg sm:text-xl font-bold text-slate-900 leading-relaxed mb-6">
+                            جاري تحميل السؤال...
+                        </h3>
+
+                        <!-- Options Container -->
+                        <div id="options-container" class="space-y-3">
+                            <!-- Options injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Navigation Footer Controls -->
+                    <div class="flex items-center justify-between pt-2">
+                        <button id="prev-btn" onclick="navigateQuestion(-1)" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-700 font-semibold hover:bg-slate-100 transition-all flex items-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-arrow-right"></i>
+                            <span>السابق</span>
+                        </button>
+
+                        <button id="next-btn" onclick="navigateQuestion(1)" class="px-6 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-semibold transition-all flex items-center gap-2">
+                            <span>التالي</span>
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </button>
+
+                        <button id="finish-btn" onclick="confirmFinishQuiz()" class="hidden px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-bold transition-all flex items-center gap-2 shadow-lg shadow-brand-600/20">
+                            <i class="fa-solid fa-check-circle"></i>
+                            <span>إنهاء وعرض النتيجة</span>
+                        </button>
+                    </div>
+
+                </div>
+
+                <!-- Questions Drawer Sidebar -->
+                <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                    <div class="flex items-center justify-between border-b pb-3 border-slate-100">
+                        <h4 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-table-cells text-brand-600"></i>
+                            <span>خريطة الأسئلة</span>
+                        </h4>
+                        <span id="answered-count-badge" class="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-md font-bold">0 / 100</span>
+                    </div>
+
+                    <!-- Grid of Question Numbers -->
+                    <div id="questions-grid" class="grid grid-cols-5 gap-2 max-h-[400px] overflow-y-auto custom-scrollbar p-1">
+                        <!-- Dynamic Buttons -->
+                    </div>
+
+                    <div class="pt-3 border-t border-slate-100 space-y-2 text-xs">
+                        <div class="flex items-center gap-2 text-slate-600">
+                            <span class="w-3 h-3 rounded-full bg-brand-600 inline-block"></span>
+                            <span>مُجاب عليه</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-slate-600">
+                            <span class="w-3 h-3 rounded-full bg-amber-500 inline-block"></span>
+                            <span>مشار إليه للمراجعة</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-slate-600">
+                            <span class="w-3 h-3 rounded-full bg-slate-200 inline-block"></span>
+                            <span>غير مجاب</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- RESULT REPORT PANEL (Shown only after submission) -->
+            <div id="quiz-result-panel" class="hidden space-y-8 max-w-4xl mx-auto">
+                
+                <!-- Score Summary Banner -->
+                <div class="bg-white rounded-2xl p-6 sm:p-8 border border-slate-200 shadow-sm text-center relative overflow-hidden">
+                    <div id="result-badge-bg" class="absolute top-0 right-0 left-0 h-3 bg-brand-600"></div>
+                    
+                    <h2 class="text-2xl font-extrabold text-slate-900 mt-2 mb-1">نتيجة الاختبار التفصيلية</h2>
+                    <p class="text-slate-500 text-sm mb-6">تقرير شامل بناءً على كافة إجاباتك في الاختبار</p>
+
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-6 my-6">
+                        <div class="relative flex items-center justify-center w-36 h-36 rounded-full border-8 border-slate-100 bg-slate-50" id="score-circle">
+                            <div class="text-center">
+                                <span id="final-percentage" class="text-3xl font-black text-slate-900">0%</span>
+                                <span id="score-text" class="block text-xs font-semibold text-slate-500 mt-1">0 من 100</span>
+                            </div>
+                        </div>
+
+                        <div class="text-right space-y-3">
+                            <div id="appraisal-title" class="text-xl font-bold text-slate-800">ممتاااااااز!</div>
+                            <p id="appraisal-desc" class="text-slate-600 text-sm max-w-xs leading-relaxed">
+                                أدائك مميز جدًا في باب الفاعل، يظهر استيعابك الرائع للقواعد والأحكام والشواهد!
+                            </p>
+                            <div class="flex gap-2 text-xs font-semibold pt-1">
+                                <span id="res-time-spent" class="bg-slate-100 text-slate-700 px-3 py-1 rounded-md">الوقت المستغرق: 00:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center justify-center gap-3 border-t border-slate-100 pt-6">
+                        <button onclick="startQuiz(false)" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i>
+                            <span>إعادة الاختبار</span>
+                        </button>
+                        <button onclick="window.print()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-sm transition-all flex items-center gap-2">
+                            <i class="fa-solid fa-print"></i>
+                            <span>طباعة التقرير</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown of All Questions -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check text-brand-600"></i>
+                        <span>مراجعة الحلول والنموذج الإجابي:</span>
+                    </h3>
+
+                    <div id="review-questions-list" class="space-y-4">
+                        <!-- Dynamic list of evaluated questions -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================= EDITOR / ADMIN VIEW ================= -->
+        <div id="editor-view" class="hidden space-y-6 max-w-4xl mx-auto">
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+                <div>
+                    <h2 class="text-xl font-bold text-slate-900">مُنشئ ومعدّل الأسئلة</h2>
+                    <p class="text-xs text-slate-500 mt-1">يمكنك إضافة أسئلة أو تعديل الأسئلة الحالية وتصديرها</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="exportQuizJSON()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors flex items-center gap-1.5">
+                        <i class="fa-solid fa-download"></i>
+                        <span>تصدير ملف JSON</span>
+                    </button>
+                    <label class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg transition-colors cursor-pointer flex items-center gap-1.5">
+                        <i class="fa-solid fa-upload"></i>
+                        <span>استيراد ملف</span>
+                        <input type="file" id="import-json-input" accept=".json" class="hidden" onchange="importQuizJSON(event)">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Add/Edit Form -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <h3 class="font-bold text-slate-800 text-sm border-b pb-2">إضافة سؤال جديد</h3>
+                
+                <div>
+                    <label class="block text-xs font-semibold text-slate-700 mb-1">نص السؤال</label>
+                    <input type="text" id="ed-q-text" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-brand-500" placeholder="أدخل السؤال هنا...">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">الخيار (أ)</label>
+                        <input type="text" id="ed-opt-0" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">الخيار (ب)</label>
+                        <input type="text" id="ed-opt-1" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">الخيار (ج)</label>
+                        <input type="text" id="ed-opt-2" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">الخيار (د)</label>
+                        <input type="text" id="ed-opt-3" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">الإجابة الصحيحة</label>
+                        <select id="ed-correct-idx" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                            <option value="0">الخيار (أ)</option>
+                            <option value="1">الخيار (ب)</option>
+                            <option value="2">الخيار (ج)</option>
+                            <option value="3">الخيار (د)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">الشرح / التوضيح</label>
+                        <input type="text" id="ed-explanation" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="توضيح القاعدة النحوية...">
+                    </div>
+                </div>
+
+                <button onclick="addNewQuestionFromEditor()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg text-sm transition-colors">
+                    حفظ السؤال في القائمة
+                </button>
+            </div>
+
+            <!-- Existing Questions List -->
+            <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                <div class="flex items-center justify-between">
+                    <h3 class="font-bold text-slate-800 text-sm">الأسئلة المسجلة في النظام</h3>
+                    <span id="editor-q-count" class="text-xs bg-slate-100 text-slate-600 px-2 py-1 rounded font-bold">100 سؤال</span>
+                </div>
+
+                <div id="editor-questions-container" class="space-y-3 max-h-[500px] overflow-y-auto custom-scrollbar pl-2">
+                    <!-- Questions list -->
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // ================= FULL DATASET: 100 QUESTIONS FROM "اختبار ياسمين باب الفاعل" =================
+        const defaultQuestions = [
+            // --- Section 1: MCQs (1-25) ---
+            {
+                q: "الفاعل في الاصطلاح النحوي هو:",
+                options: ["اسم مرفوع تقدمه فعل مبني للمجهول.", "الاسم المسند إليه فعل على طريقة (فَعَلَ) أو شبهه.", "كل اسم منصوب وقع عليه فعل الفاعل.", "اسم مجرور بحرف جر زائد دائماً."],
+                answer: 1,
+                explanation: "الفاعل هو الاسم المسند إليه فعل تام متقدم على طريقة (فَعَلَ) المبني للمعلوم أو ما يشبهه."
+            },
+            {
+                q: "نوع الفاعل في قولنا: «يعجبني أن تقومَ» هو:",
+                options: ["فاعل صريح.", "فاعل مؤول بالصريح.", "نائب فاعل.", "ضمير مستتر وجوباً."],
+                answer: 1,
+                explanation: "المصدر المؤول من (أن والفعل) في محل رفع فاعل تقديره (قيامُك)."
+            },
+            {
+                q: "الفاعل لاسم الفعل في قولنا: «هَيْهَاتَ العَقِيقُ» هو كلمة:",
+                options: ["هيهات.", "العقيق.", "ضمير مستتر تقديره هو.", "محذوف وجوباً."],
+                answer: 1,
+                explanation: "اسم الفعل (هيهات) يعمل عمل الفعل الماضي (بَعُدَ)، و(العقيقُ) فاعل مرفوع بالضمة."
+            },
+            {
+                q: "حكم تقديم الفاعل على عامله (الفعل) عند الجمهور (البصريين) هو:",
+                options: ["واجب.", "ممتنع، ويعرب الاسم المقدم مبتدأ.", "جائز مطلقاً.", "جائز بشرط تأنيث الفعل."],
+                answer: 1,
+                explanation: "عند جمهور البصريين يمتنع تقديم الفاعل على الفعل؛ وإذا تقدم يُعرب مبتدأ وتكون الجملة بعده خبراً."
+            },
+            {
+                q: "في نحو: «الزيدانِ قَامَا»، تعرب الألف في (قاما) عند البصريين:",
+                options: ["حرفاً دالاً على التثنية فقط.", "فاعلاً.", "علامة إعراب فرعية.", "مفعولاً به."],
+                answer: 1,
+                explanation: "الألف ضمير متصل مبني في محل رفع فاعل للفعل (قام)، والجملة الفعلية خبر المبتدأ."
+            },
+            {
+                q: "مذهب جمهور العرب عند إسناد الفعل إلى اسم ظاهر مثنى أو مجموع هو:",
+                options: ["إلحاق علامة التثنية والجمع بالفعل.", "تجريد الفعل من علامة التثنية والجمع.", "حذف الفاعل الظاهر.", "تأنيث الفعل وجوباً."],
+                answer: 1,
+                explanation: "الأصل تجريد الفعل من العلامات نحو: (قام الزيدان / قام الزيدون)."
+            },
+            {
+                q: "اللغة التي تصحح إلحاق علامات التثنية والجمع بالفعل مع ذكر الفاعل الظاهر (أكلوني البرغيث) هي لغة:",
+                options: ["قريش.", "تميم.", "بني الحارث بن كعب.", "هوازن."],
+                answer: 2,
+                explanation: "تنسَب هذه اللغة لبني الحارث بن كعب وأزد شنوعة وطئ."
+            },
+            {
+                q: "تُعرب الواو في «يَلُومُونَنِي أَهْلِي» على لغة بني الحارث بن كعب:",
+                options: ["فاعلاً وأهلي بدل.", "حرفاً دالاً على الجمع، و(أهلي) هو الفاعل.", "مفعولاً به.", "مبتدأ مؤخراً."],
+                answer: 1,
+                explanation: "على هذه اللغة تكون الواو حرفاً دالاً على الجمع فقط، و(أهلي) هو الفاعل الظاهر."
+            },
+            {
+                q: "حكم حذف الفعل في نحو: «زَيْدٌ» لمن سأل: «مَنْ قَرَأَ؟» هو:",
+                options: ["واجب.", "جائز للدلالة عليه.", "ممتنع.", "شاذ."],
+                answer: 1,
+                explanation: "يجوز حذف الفعل وإبقاء الفاعل إذا دل عليه دليل كجواب الاستفهام (التقدير: قرأ زيدٌ)."
+            },
+            {
+                q: "إعراب كلمة (أَحَدٌ) في قوله تعالى: ﴿وَإِنْ أَحَدٌ مِّنَ الْمُشْرِكِينَ اسْتَجَارَكَ﴾ عند جمهور النحاة هو:",
+                options: ["مبتدأ.", "فاعل بفعل محذوف وجوباً يفسره المذكور بعده.", "مفعول به مقدم.", "بدل من الضمير المستتر."],
+                answer: 1,
+                explanation: "أن أدوات الشرط مختصة بالدخول على الأفعال، فالاسم المرفوع بعدها يُعرب فاعلاً بفعل محذوف وجوباً."
+            },
+            {
+                q: "يجب تأنيث الفعل مع فاعله في موضعين، أحدهما:",
+                options: ["إذا كان الفاعل ظاهراً مجازي التأنيث.", "إذا كان الفاعل ضميراً متصلاً يعود على مؤنث حقيقي أو مجازي.", "إذا فصل بين الفعل والفاعل بغير إلا.", "إذا كان الفاعل جمع تكسير."],
+                answer: 1,
+                explanation: "يلزم تأنيث الفعل إذا كان الفاعل ضميراً مستتراً يعود على مؤنث (نحو: هند قامت / الشمس طلعت)."
+            },
+            {
+                q: "حكم تأنيث الفعل في: «طَلَعَتِ الشَّمْسُ» (الفاعل ظاهر مجازي التأنيث) هو:",
+                options: ["واجب.", "جائز.", "ممتنع.", "شاذ."],
+                answer: 1,
+                explanation: "يجوز تأنيث الفعل وتذكيره إذا كان الفاعل اسماً ظاهراً مجازي التأنيث."
+            },
+            {
+                q: "إذا فصل بين الفعل وفاعله المؤنث الحقيقي بغير (إلا) نحو: «أَتَى القَاضِيَ بِنْتُ الوَاقِفِ»، فحكم تأنيث الفعل:",
+                options: ["واجب التأنيث فقط.", "جائز والإثبات أجود.", "ممتنع الحذف مطلقاً.", "شاذ نادراً."],
+                answer: 1,
+                explanation: "يجوز ترك التاء مع الفاعل المؤنث الحقيقي إذا فصل بينه وبين الفعل بفاصل، والإثبات أجود."
+            },
+            {
+                q: "إذا فصل بين الفعل وفاعله المؤنث بـ (إلا) نحو: «مَا قَامَ إِلاَّ هِنْدُ»، فحكم إثبات التاء عند الجمهور:",
+                options: ["واجب.", "ممتنع في النثر ولا يجوز إلا في الشعر.", "جائز على السواء.", "مستحسن."],
+                answer: 1,
+                explanation: "يمتنع إثبات التاء في النثر عند الجمهور لأن الفاعل في الحقيقة محذوف تقديره (ما قام أحدٌ إلا هندُ)."
+            },
+            {
+                q: "حكم اقتران الفعل بالتاء إذا أسند إلى جمع مذكر سالم (قام الزيدون):",
+                options: ["جائز.", "ممتنع.", "واجب.", "قليل."],
+                answer: 1,
+                explanation: "يمتنع إلحاق تاء التأنيث بالفعل إذا كان الفاعل جمع مذكر سالماً للمحافظة على التذكير."
+            },
+            {
+                q: "عند إسناد الفعل إلى جمع تكسير لمذكر أو لمؤنث (قام الرجال / قامت الرجال):",
+                options: ["يجب تذكير الفعل.", "يجب تأنيث الفعل.", "يجوز إثبات التاء وحذفها.", "يمتنع استعماله."],
+                answer: 2,
+                explanation: "يجوز التذكير بتأويل (الجمع) والتأنيث بتأويل (الجماعة)."
+            },
+            {
+                q: "سبب جواز إثبات التاء وحذفها مع فاعل (نِعْمَ) المؤنث المفرد (نِعْمَتِ المَرْأَةُ هِنْدُ) هو:",
+                options: ["لأن الفاعل مجازي التأنيث.", "لأن فاعلها يقصد به استغراق الجنس فُعُومِلَ معاملة جمع التكسير.", "لأن هند مبتدأ مؤخر.", "للفصل بينهما."],
+                answer: 1,
+                explanation: "لأن أل في الفاعل لاستغراق الجنس فشابه جمع التكسير في الشمول."
+            },
+            {
+                q: "الأصل في ترتيب عناصر الجملة الفعلية هو:",
+                options: ["تقديم المفعول ثم الفعل ثم الفاعل.", "اتصال الفاعل بالفعل وتأخر المفعول به.", "تقديم المفعول على الفعل والفاعل دائماً.", "استواء جميع المراتب."],
+                answer: 1,
+                explanation: "الأصل أن يلي الفاعلُ الفعلَ لأنه كالجزء منه، ثم يأتي المفعول به."
+            },
+            {
+                q: "يجب تقديم المفعول به على الفعل والفاعل إذا كان المفعول به:",
+                options: ["اسماً مقترناً بـ (أل).", "اسم شرط أو اسم استفهام.", "اسماً ظاهراً مجروراً.", "جمع تكسير."],
+                answer: 1,
+                explanation: "أسماء الشرط والاستفهام لها صدارة الكلام فيجب تقديمها كمفعول به (نحو: أياً ما تدعوا)."
+            },
+            {
+                q: "في قولنا: «ضَرَبَ مُوسَى عِيسَى»، يجب جعل (موسى) فاعلاً و(عيسى) مفعولاً بسبب:",
+                options: ["القصد إلى التبرك.", "خوف اللتباس أحدهما بالآخر لعدم وجود قرينة تميزهما.", "حصر المفعول بـ إنما.", "تقدم الفاعل لفظاً فقط."],
+                answer: 1,
+                explanation: "عند خفاء الحركات وإمكان اللبس وعدم وجود قرينة لفظية أو معنوية يجب إبقاء الأصل بالتقديم."
+            },
+            {
+                q: "إذا وجدت قرينة تميز الفاعل من المفعول مثل: «أَكَلَ المِثْرَى مُوسَى»، فحكم تقديم المفعول به:",
+                options: ["ممتنع.", "جائز.", "واجب.", "شاذ."],
+                answer: 1,
+                explanation: "وجود القرينة المعنوية (الأكل والكمثرى) تزيل اللبس فيجوز تقديمه."
+            },
+            {
+                q: "في جملة: «إِنَّمَا ضَرَبَ زَيْدٌ عَمْراً»، يكون المحصور بـ (إنما) هو:",
+                options: ["الفعل (ضرب).", "الفاعل (زيد).", "المفعول به المتأخر (عمراً).", "الفاعل والمفعول معاً."],
+                answer: 2,
+                explanation: "المحصور بـ (إنما) يقع مؤخراً وجوباً، فالعمرو هو المحصور به."
+            },
+            {
+                q: "حكم تقديم الفاعل المحصور بـ (إنما) نحو: «إنما ضرب زيدٌ عمراً» هو:",
+                options: ["جائز مطلقاً.", "ممتنع، ويجب تأخير المحصور بـ (إنما) دائماً.", "مستحسن.", "جائز بقلة."],
+                answer: 1,
+                explanation: "يجب تأخير المحصور دائماً بـ (إنما) ليتعين معنى الحصر فيه."
+            },
+            {
+                q: "عُدَّ مثال: «خَافَ رَبَّهُ عُمَرُ» شائعاً وقياسياً في لسان العرب لأن:",
+                options: ["الضمير في المفعول المتقدم عائد على الفاعل المتأخر لفظاً المتقدم رتبة.", "الضمير عائد على متأخر لفظاً ورتبة.", "المفعول غير مشتمل على ضمير.", "الفاعل محصور بـ إلا."],
+                answer: 0,
+                explanation: "لأن الفاعل وإن تأخر لفظاً فهو متقدم رتبةً فلا يلزم عود الضمير على متأخر رتبة."
+            },
+            {
+                q: "حكم تركيب: «زَانَ نُورُهُ الشَّجَرَ» (حيث اتصل بالفاعل ضمير يعود على المفعول المتأخر) عند الجمهور هو:",
+                options: ["شائع وقياسي.", "شاذ وممتنع.", "واجب التقديم.", "جائز بحرية."],
+                answer: 1,
+                explanation: "شاذ وممتنع عند الجمهور لأنه يقتضي عود الضمير على متأخر لفظاً ورتبة."
+            },
+
+            // --- Section 2: Fill Blanks (Converted to 4 Options MCQs) (26-50) ---
+            {
+                q: "الفاعل اسم مرفوع أو في محل رفع، يُسند إليه ............ على طريقة فَعَلَ.",
+                options: ["الفعل أو شبهه", "الحرف المبني", "التمييز الملفوظ", "المضاف إليه"],
+                answer: 0,
+                explanation: "يسند إليه الفعل أو ما يشبه الفعل."
+            },
+            {
+                q: "يُقصد بشبه الفعل الذي يرفع الفاعل مثل: اسم الفاعل، و............، والمصدر، واسم الفعل.",
+                options: ["الصفة المشبهة واسم التفضيل", "اسم المكان", "اسم الآلة", "حروف الجر"],
+                answer: 0,
+                explanation: "المشتقات التي تعمل عمل الفعل هي اسم الفاعل والصفة المشبهة واسم التفضيل."
+            },
+            {
+                q: "في قولنا: «يعجبني أن تذاكرَ»، الفاعل نوعه مصدر .............",
+                options: ["مؤول بالصريح", "صريح مجرد", "صناعي", "ميمي"],
+                answer: 0,
+                explanation: "أن + الفعل المضارع تشكل مصدراً مؤولاً."
+            },
+            {
+                q: "مذهب جمهور البصريين أن الفاعل يجب أن ............، ولا يجوز تقديمه عليه.",
+                options: ["يتأخر عن عامله", "يتقدم على عامله", "يُحذف وجوباً", "يُجزم بالكسرة"],
+                answer: 0,
+                explanation: "عند البصريين لا يتقدم الفاعل على عامله إطلاقاً."
+            },
+            {
+                q: "إذا تقدم الفاعل على الفعل عند البصريين كقولنا: (الزيدان قاما)، أُعرب الاسم المقدم .............",
+                options: ["مبتدأ", "فاعلاً مقدماً", "مفعولاً به", "نائب فاعل"],
+                answer: 0,
+                explanation: "يعرب مبتدأ وتكون الجملة بعده خبراً."
+            },
+            {
+                q: "يجب ............ من علامة التثنية والجمع إذا أُسند إلى اسم ظاهر عند الجمهور.",
+                options: ["تجريد الفعل", "إلحاق العلامة", "حذف الفعل", "جزم الفعل"],
+                answer: 0,
+                explanation: "الأصل تجريد الفعل من العلامات مع الاسم الظاهر."
+            },
+            {
+                q: "تُعرف لغة بني الحارث بن كعب التي تُلحق بالفعل علامة التثنية والجمع بـ .............",
+                options: ["لغة أكلوني البرغيث", "إعمال المهمل", "تنازع العاملين", "الترخيم والنداء"],
+                answer: 0,
+                explanation: "تسمى مشهورة بلغة أكلوني البرغيث."
+            },
+            {
+                q: "في قوله تعالى: ﴿إِذَا السَّمَاءُ انشَقَّتْ﴾، تُعرب (السماء) فاعلاً بفعل ............ يفسره الفعل المذكور بعدها.",
+                options: ["محذوف وجوباً", "مذكور جوازاً", "ناسخ مقدر", "مبني للمجهول"],
+                answer: 0,
+                explanation: "تقديره: إذا انشقت السماء انشقت."
+            },
+            {
+                q: "يجوز حذف الفعل وإبقاء الفاعل إذا .............",
+                options: ["دل عليه دليل", "كان الفاعل مثنى", "سبق بإن الشرطية فقط", "اتصل به ضمير"],
+                answer: 0,
+                explanation: "يحذف الفعل جوازاً للدلالة عليه في جواب الاستفهام ونحوه."
+            },
+            {
+                q: "تلزم تاء التأنيث الساكنة الفعل الماضي وجوباً إذا كان الفاعل ضميراً .............",
+                options: ["مستتراً يعود على مؤنث", "بارزاً للمذكر", "منفصلاً مع إلا", "مخاطباً مفرداً"],
+                answer: 0,
+                explanation: "مثل (هند قامت / الشمس طلعت)."
+            },
+            {
+                q: "إذا كان الفاعل ظاهراً حقيقي التأنيث متصلاً بفعله مثل (قامت هندُ)، فحكم تأنيث الفعل .............",
+                options: ["واجب", "جائز", "ممتنع", "شاذ"],
+                answer: 0,
+                explanation: "تجب التاء عند اتصال الفعل بفاعله الظاهر الحقيقي التأنيث."
+            },
+            {
+                q: "إذا كان الفاعل ظاهراً مجازي التأنيث مثل (طلعت الشمسُ)، فحكم تأنيث الفعل .............",
+                options: ["جائز", "واجب", "ممتنع", "شاذ"],
+                answer: 0,
+                explanation: "يجوز التذكير والتأنيث مع المجازي التأنيث."
+            },
+            {
+                q: "يجوز ترك تاء التأنيث إذا قُصِد بالفاعل ............ في باب نِعْمَ وبِئْسَ.",
+                options: ["استغراق الجنس", "التخصيص", "النداء", "التعجب"],
+                answer: 0,
+                explanation: "نحو (نعم المرأة هند) فتجامل معاملة جمع التكسير."
+            },
+            {
+                q: "يُستثنى من امتناع تأنيث الفعل المفصول بـ (إلا) حالة وقوعه في .............",
+                options: ["الشعر للضرورة", "النثر الفصيح", "القرآن الكريم", "الخطابة"],
+                answer: 0,
+                explanation: "جاء إثبات التاء مع إلا في الشعر ضرورة."
+            },
+            {
+                q: "إذا أسند الفعل إلى جمع مذكر سالم مثل (قام الزيدون) ............ إلحاق تاء التأنيث بالفعل.",
+                options: ["يمتنع", "يجب", "يجوز", "يستحسن"],
+                answer: 0,
+                explanation: "يمتنع التاء مراعاة للتذكير السالم."
+            },
+            {
+                q: "عند إسناد الفعل إلى جمع التكسير يجوز تأنيثه بتأويل ............ وتذكيره بتأويل .............",
+                options: ["الجماعة / الجمع", "المذكر / المؤنث", "الفرد / المجموع", "الإفراد / التثنية"],
+                answer: 0,
+                explanation: "قامت الرجال (جماعة) / قام الرجال (جمع)."
+            },
+            {
+                q: "الأصل في المفعول به أن ............ بوجود الفاعل بينهما.",
+                options: ["يتأخر عن الفاعل", "يتقدم على الفعل", "يُحذف وجوباً", "يُرفع بالضمة"],
+                answer: 0,
+                explanation: "الترتيب الأصلي: فعل + فاعل + مفعول به."
+            },
+            {
+                q: "يجب تقديم المفعول به على الفعل والفاعل إذا كان المفعول ............ نحو ﴿إِيَّاكَ نَعْبُدُ﴾.",
+                options: ["ضميراً منفصلاً لو تأخر للزم اتصاله", "اسماً ظاهراً", "مضافاً لضمير", "معطوفاً"],
+                answer: 0,
+                explanation: "مثل (إياك نعبد) فلو تأخر لقيل (نعبدك)."
+            },
+            {
+                q: "يجب تقديم الفاعل على المفعول به عند خشية ............ لعدم وجود قرينة تميز أحدهما عن الآخر.",
+                options: ["اللبس", "الإعراب", "الثقل", "الحذف"],
+                answer: 0,
+                explanation: "عند عدم ظهور العلامات والقرائن تجنباً للبس."
+            },
+            {
+                q: "المحصور بـ (إنما) و(إلا) حكمه ............ وجوباً عند البصريين ليظهر معنى الحصر.",
+                options: ["التأخير", "التقديم", "الحذف", "البناء"],
+                answer: 0,
+                explanation: "المحصور يجب تأخيره دائماً."
+            },
+            {
+                q: "في قولنا: «إنما ضرب عمراً زيدٌ»، الفاعل المحصور هو .............",
+                options: ["زيدٌ", "عمراً", "ضرب", "مستتر"],
+                answer: 0,
+                explanation: "لأنه المتأخر الواقع في نهاية جملة إنما."
+            },
+            {
+                q: "يجوز تقديم المفعول المشتمل على ضمير يعود على الفاعل المتأخر نحو «خاف ربه عمر» لأن الفاعل متتقدم ............ وإن تأخر لفظاً.",
+                options: ["رتبةً", "لفظاً", "إعراباً", "صرفةً"],
+                answer: 0,
+                explanation: "لأن الفاعل رتبته الأصلية التقديم على المفعول."
+            },
+            {
+                q: "يمتنع تقدم الفاعل المشتمل على ضمير يعود على المفعول المتأخر نحو «زان نوره الشجر» لئلا يعود الضمير على .............",
+                options: ["متأخر لفظاً ورتبة", "متقدم لفظاً ورتبة", "اسم ظاهر", "ضمير آخر"],
+                answer: 0,
+                explanation: "عود الضمير على متأخر لفظاً ورتبة ممنوع عند جمهور البصريين."
+            },
+            {
+                q: "يرى الكسائي جواز تقديم الفاعل المحصور بـ ............ خلافاً لجمهور البصريين.",
+                options: ["إنما", "إلا", "لا النافية", "لم"],
+                answer: 0,
+                explanation: "أجاز الكسائي تقديم المحصور بإنما."
+            },
+            {
+                q: "العامل في الفاعل إما أن يكون فعلاً متصرفاً أو غير متصرف أو .............",
+                options: ["شبه فعل", "حرف جر زائد", "مضافاً", "ضميراً"],
+                answer: 0,
+                explanation: "شبه الفعل كاسم الفاعل والمصدر والصفة المشبهة."
+            },
+
+            // --- Section 3: True / False (51-75) ---
+            {
+                q: "الفاعل لا يكون إلا اسماً صريحاً دائماً.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، قد يكون اسماً صريحاً أو مصدراً مؤولاً بالصريح (نحو: يعجبني أن تقوم)."
+            },
+            {
+                q: "يجوز في نحو «زيدٌ عندك أبوه» إعراب (أبوه) فاعلاً للظرف (عندك).",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، شبه الجملة والظرف ينصب مفعولاً ويرفع فاعلاً."
+            },
+            {
+                q: "يجوز تقديم الفاعل على رافعه عند جمهور البصريين.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، يمتنع تقديم الفاعل عند البصريين ويعرب الاسم المقدم مبتدأ."
+            },
+            {
+                q: "تظهر فائدة الخلاف بين البصريين والكوفيين في تقديم الفاعل في حالة التثنية والجمع.",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، كقولك (الزيدان قاما) بالألف عند البصريين و(الزيدان قام) عند الكوفيين."
+            },
+            {
+                q: "لغة (أكلوني البرغيث) هي اللغة الفصحى المشهورة عند جميع العرب.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، هي لغة لبعض القبائل وليست اللغة المشهورة الغالبة."
+            },
+            {
+                q: "النون والواو والألف في أفعال لغة «أكلوني البرغيث» حروف تدل على التثنية والجمع وليست ضمائر فاعلة عند بعض النحاة.",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، تعرب حروف دالة على العلامة والاسم الظاهر هو الفاعل."
+            },
+            {
+                q: "يمتنع حذف الفعل مطلقاً حتى لو دل عليه دليل.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، يجوز حذفه إذا دل عليه دليل."
+            },
+            {
+                q: "الاسم المرفوع الواقع بعد (إن) أو (إذا) الشرطيتين يُعرب فاعلاً بفعل محذوف وجوباً عند جمهور النحاة.",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، نحو: ﴿إِذَا السَّمَاءُ انشَقَّتْ﴾."
+            },
+            {
+                q: "يجب تأنيث الفعل إذا كان الفاعل ظاهراً مجازي التأنيث.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، يجوز التذكير والتأنيث مع مجازي التأنيث الظاهر."
+            },
+            {
+                q: "يجب تأنيث الفعل الماضي إذا أُسند إلى ضمير متصل يعود على مؤنث مجازي نحو: «الشَّمْسُ طَلَعَتْ».",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، يجب التأنيث إذا كان الفاعل ضميراً مستتراً يعود على مؤنث."
+            },
+            {
+                q: "إذا كان الفاعل ضميراً منفصلاً للمؤنث نحو: «هِنْدٌ مَا قَامَ إِلاَّ هِيَ» وجب إثبات التاء في الفعل.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، يمتنع إثبات التاء لأن الفصل بإلا ألغى التأنيث."
+            },
+            {
+                q: "الأجود في نحو «أتى القاضي بنت الواقف» إثبات التاء (أتت القاضي) ويجوز تركها.",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، وجود الفاصل بغير إلا يجعل الإثبات أجود مع جواز الترك."
+            },
+            {
+                q: "يجوز إثبات التاء في الفاعل المفصول بـ (إلا) في النثر الفصيح عند الجمهور.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، يمتنع في النثر ولا يصح إلا ضرورة في الشعر."
+            },
+            {
+                q: "يجوز تذكير الفعل وتأنيثه عند إسناده لجمع التكسير نحو: (قام الرجال وقامت الرجال).",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، بتأويل الجمع أو الجماعة."
+            },
+            {
+                q: "يجب تأنيث الفعل مع فاعل جمع المذكر السالم.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، يمتنع تأنيث الفعل مع جمع المذكر السالم."
+            },
+            {
+                q: "يجوز في «نِعْمَ المَرْأَةُ هِنْدُ» إثبات التاء وحذفها لأن المقصود استغراق الجنس.",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، يعامل معاملة جمع التكسير."
+            },
+            {
+                q: "يجوز تقديم المفعول به على الفعل إذا كان المفعول اسم استفهام.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، يجب تقديمه وجوباً لأن له الصدارة."
+            },
+            {
+                q: "يجب تقديم الفاعل على المفعول به إذا كان الفاعل ضميراً متصلاً غير محصور نحو: «ضَرَبْتُ زَيْداً».",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، لوجوب اتصال الفاعل بالفعل أولاً."
+            },
+            {
+                q: "إذا ظهرت القرينة في النحو: «أَكَلَتِ الكُمَّثْرَى فَاَطِمَةُ» وجب تقدم الفاعل وتأخر المفعول.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، وجود القرينة يجيز تقديم المفعول وتأخير الفاعل."
+            },
+            {
+                q: "يمتنع تقديم المحصور بـ (إنما) سواء كان فاعلاً أو مفعولاً عند جميع النحاة.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، الكسائي أجاز تقديم المحصور بـ إنما."
+            },
+            {
+                q: "يمتنع تقديم المفعول المحصور بـ (إلا) عند الفراء وأكثر البصريين.",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، يمتنع تقديم المحصور بـ إلا عند الكثرة."
+            },
+            {
+                q: "تقديم المفعول المشتمل على ضمير يعود على الفاعل المتأخر نحو «خاف ربه عمر» جائز وشائع.",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، لأن الضمير يعود على متأخر لفظاً متقدم رتبة وهو الفاعل."
+            },
+            {
+                q: "بيت الشاعر: «زَانَ نُورُهُ الشَّجَرَ» يستشهد به الجمهور على جواز رجوع الضمير على متأخر لفظاً ورتبة.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، يستشهدون به على الشذوذ والامتناع."
+            },
+            {
+                q: "أصل سكون آخر الفعل الماضي المتصل بضمير الرفع المتحرك (ضربْتُ) هو كراهة توالي أربع متحركات فيما هو كالكلمة الواحدة.",
+                options: ["صح", "خطأ"],
+                answer: 0,
+                explanation: "صح، تسكن لتجنب التوالي الفاعل مع الفعل."
+            },
+            {
+                q: "الفعل «نِعْمَ» يرفع فاعلاً ظاهراً فقط ولا يرفع ضامراً.",
+                options: ["صح", "خطأ"],
+                answer: 1,
+                explanation: "خطأ، يرفع ضامراً مستتراً مفسراً بتمييز نحو (نعم رجلًا)."
+            },
+
+            // --- Section 4: Judgments, Evidence & Parsing (76-100) ---
+            {
+                q: "ما الحكم النحوي إذا تقدم الفاعل على رافعه عند البصريين والكسائي؟",
+                options: [
+                    "عند البصريين يمتنع ويعرب مبتدأً، وعند الكسائي يجوز ويعرب فاعلاً مقدماً.",
+                    "يمتنع عند البصريين والكسائي معاً.",
+                    "يجوز مطلقاً عند الجميع.",
+                    "يحذف الفعل وجوباً."
+                ],
+                answer: 0,
+                explanation: "البصريون يمنعون والكسائي يجيز تقديم الفاعل."
+            },
+            {
+                q: "الحكم النحوي لإسناد الفعل إلى ظاهر مثنى أو مجموع على لغة بني الحارث بن كعب:",
+                options: [
+                    "تُلحق بالفعل علامة التثنية أو الجمع وتكون حرفاً دالاً عليها، والظاهر هو الفاعل.",
+                    "تجريد الفعل وجوباً.",
+                    "إعراب العلامة فاعلاً والظاهر بدلاً.",
+                    "امتناع الإسناد."
+                ],
+                answer: 0,
+                explanation: "هي لغة (أكلوني البرغيث) بتلحق العلامة بالفعل."
+            },
+            {
+                q: "الحكم النحوي لتأنيث الفعل إذا كان الفاعل ظاهراً حقيقي التأنيث متصلاً بالفعل (نحو: قامت هندُ):",
+                options: ["واجب التأنيث.", "جائز التأنيث.", "ممتنع التأنيث.", "شاذ."],
+                answer: 0,
+                explanation: "يلزم تأنيث الفعل الماضي بالتاء."
+            },
+            {
+                q: "الحكم النحوي لتأنيث الفعل إذا فصل بين الفعل وفاعله المؤنث بـ (إلا) (نحو: ما قام إلا هندُ):",
+                options: ["يمتنع إثبات التاء في النثر الفصيح عند الجمهور، ولا يجوز إلا في الشعر.", "واجب التأنيث.", "جائز على السواء.", "مستحسن."],
+                answer: 0,
+                explanation: "يمتنع إثبات التاء عند الجمهور في النثر."
+            },
+            {
+                q: "الحكم النحوي لتقديم المفعول به على الفعل والفاعل إذا كان اسم شرط (نحو: أيّاً ما تدعوا فله الأسماء الحسنى):",
+                options: ["واجب التقديم لأن أسماء الشرط لها صدارة الكلام.", "جائز التقديم.", "ممتنع التقديم.", "شاذ."],
+                answer: 0,
+                explanation: "اسم الشرط يقتضي الصدارة فيجب تقديمه."
+            },
+            {
+                q: "الحكم النحوي إذا خيف اللبس بين الفاعل والمفعول لعدم وجود القرينة وإعرابهما مقدر (نحو: ضرب موسى عيسى):",
+                options: ["يجب تقديم الفاعل وتأخير المفعول به لعدم اللبس.", "يجب تقديم المفعول به.", "يجوز التقديم والتأخير.", "يحذف أحدهما."],
+                answer: 0,
+                explanation: "المحافظة على الترتيب الأصلي واجبة عند عدم وجود القرينة."
+            },
+            {
+                q: "الحكم النحوي إذا كان الفاعل محصوراً بـ (إنما) (نحو: إنما ضرب زيدٌ عمراً):",
+                options: ["يجب تأخير الفاعل المحصور عند جمهور البصريين (وأجاز الكسائي تقديمه).", "يجب تقديم الفاعل.", "يجوز دون شروط.", "يحذف الفاعل."],
+                answer: 0,
+                explanation: "المحصور يجب تأخيره عند الجمهور."
+            },
+            {
+                q: "الحكم النحوي إذا اتصل بالفاعل ضمير يعود على المفعول به المتأخر (نحو: زان نوره الشجر):",
+                options: ["ممتنع وشاذ عند الجمهور لعود الضمير على متأخر لفظاً ورتبة.", "جائز وقياسي.", "واجب التقديم.", "مستحسن."],
+                answer: 0,
+                explanation: "شاذ وممتنع عند الجمهور."
+            },
+            {
+                q: "موطن الشاهد ووجه الاستشهاد في بيت: «وَقَدْ أَسْلَامَهُ مُبْعَدٌ وَحَمِيمُ»:",
+                options: [
+                    "إلحاق ألف التثنية بالفعل (أسلما) مع وجود الفاعل الظاهر (مبعد وحميم) على لغة بني الحارث.",
+                    "وجوب تقديم الفاعل على المفعول.",
+                    "وجوب تأنيث الفعل.",
+                    "حذف الفاعل."
+                ],
+                answer: 0,
+                explanation: "أتت ألف التثنية في أسلمام مع وجود الاسم الظاهر بعدها."
+            },
+            {
+                q: "موطن الشاهد ووجه الاستشهاد في بيت: «يَلُومُونَنِي فِي اشْتِرَاءِ النَّخِيلِ أَهْلِي»:",
+                options: [
+                    "إلحاق واو الجمع بالفعل (يلومونني) مع وجود الفاعل الظاهر (أهلي).",
+                    "تقديم المفعول به وجوباً.",
+                    "تأنيث الفعل مع جمع التكسير.",
+                    "حصر المفعول بـ إلا."
+                ],
+                answer: 0,
+                explanation: "إلحاق الواو الدالة على الجمع بالفعل مع ذكر الفاعل الظاهر (أهلي)."
+            },
+            {
+                q: "موطن الشاهد ووجه الاستشهاد في بيت: «رَأَيْنَ الغَوَانِي الشَّيْبَ فَهُمْنَ عَنِّي»:",
+                options: [
+                    "إلحاق نون النسوة بالفعل (رأين) مع وجود الفاعل الظاهر (الغواني).",
+                    "جواز حذف الفاعل.",
+                    "وجوب تأخير المفعول.",
+                    "إعراب الغواني مبتدأ."
+                ],
+                answer: 0,
+                explanation: "اتصال نون النسوة بالفعل مع إظهار الفاعل الجمع المؤنث (الغواني)."
+            },
+            {
+                q: "الشاهد في بيت: «فَلَا مُزْنَةٌ وَدَقَتْ وَدْقَهَا ... وَلَا أَرْضَ أَبْقَلَ إِبْقَالَهَا»:",
+                options: [
+                    "ترك تاء التأنيث في الفعل (أبقل) مع أن الفاعل ضمير يعود على مؤنث مجازي (أرض).",
+                    "وجوب تقديم المفعول به.",
+                    "حذف الفعل وجوباً.",
+                    "إسناد الفعل لجمع مذكر."
+                ],
+                answer: 0,
+                explanation: "حذف التاء من أقال والفاعل ضمير يعود على مؤنث مجازي."
+            },
+            {
+                q: "الشاهد النحوي في بيت: «فَمَا بَقِيَتْ إِلَّا الضُّلُوعُ الجَرَاشِعُ»:",
+                options: [
+                    "إثبات تاء التأنيث في (بقيت) مع الفصل بـ (إلا)، وهو للضرورة في الشعر وخلاف الأصل.",
+                    "امتناع إثبات التاء.",
+                    "وجوب تقدم المفعول.",
+                    "جواز حذف الفاعل."
+                ],
+                answer: 0,
+                explanation: "جاءت التاء مثبتة مع إلا في الشعر خلافاً لما يمتنع في النثر."
+            },
+            {
+                q: "الشاهد النحوي في بيت: «فَمَا زَادَ إِلَّا ضِعْفَ مَا بِي كَلَامُهَا»:",
+                options: [
+                    "تقديم المفعول المحصور بـ (إلا) «ضعف» على الفاعل «كلامها»، وهو جائز عند الجمهور لعدم اللبس.",
+                    "وجوب تأخير المفعول.",
+                    "حذف الفاعل المحصور.",
+                    "شذوذ التركيب."
+                ],
+                answer: 0,
+                explanation: "جواز تقديم المفعول المحصور بإلا عند ظهور الفاعل وعدم اللبس."
+            },
+            {
+                q: "الشاهد النحوي في بيت: «جَزَى بَنُوهُ أَبَا الغِيلَانِ عَنْ كِبَرٍ»:",
+                options: [
+                    "عود الضمير في الفاعل (بنوه) على المفعول المتأخر (أبا الغيلان) لفظاً المتقدم رتبة.",
+                    "قياسي شائع عند الجميع.",
+                    "وجوب تقديم الفاعل.",
+                    "حذف الضمير."
+                ],
+                answer: 0,
+                explanation: "اتصل بالفاعل ضمير يعود على المفعول المتقدم رتبة."
+            },
+            {
+                q: "الشاهد النحوي في قوله تعالى: ﴿لِّيُجْزَى قَوْماً بِمَا كَانُوا يَكْسِبُونَ﴾:",
+                options: [
+                    "إقامة غير المفعول به الأول مقام الفاعل مع وجود المفعول به منصوباً (قوماً) على القراءة الشاذة.",
+                    "وجوب تقديم الفاعل.",
+                    "تأنيث الفعل.",
+                    "حصر الفعل بـ إنما."
+                ],
+                answer: 0,
+                explanation: "أقيم الجار والمجرور مقام النائب فاعل ونُصب المفعول (قوماً)."
+            },
+            {
+                q: "إعراب كلمة (أَحَدٌ) في قوله تعالى: ﴿وَإِنْ أَحَدٌ مِّنَ الْمُشْرِكِينَ اسْتَجَارَكَ﴾:",
+                options: [
+                    "فاعل مرفوع بفعل محذوف وجوباً يفسره الفعل المذكور بعده (استجارك).",
+                    "مبتدأ مرفوع وعلامة رفعه الضمة.",
+                    "مفعول به مقدم.",
+                    "بدل من الضمير المستتر."
+                ],
+                answer: 0,
+                explanation: "مرفوع بفعل محذوف وجوباً لوقوعه بعد إن الشرطية."
+            },
+            {
+                q: "إعراب (بِنْتُ) في جملة: «أَتَى القَاضِيَ بِنْتُ الوَاقِفِ»:",
+                options: [
+                    "فاعل مرفوع وعلامة رفعه الضمة الظاهرة، والقاضي مفعول به مقدم.",
+                    "مفعول به منصوب بالفتحة.",
+                    "مضاف إليه مجرور.",
+                    "نائب فاعل."
+                ],
+                answer: 0,
+                explanation: "بنتُ: فاعل مؤخر، والقاضي: مفعول به مقدم منصوب بالفتحة."
+            },
+            {
+                q: "إعراب (إِيَّاكَ) في قوله تعالى: ﴿إِيَّاكَ نَعْبُدُ﴾:",
+                options: [
+                    "ضمير منفصل مبني في محل نصب مفعول به مقدم وجوباً.",
+                    "فاعل مقدم مرفوع.",
+                    "مبتدأ مبني في محل رفع.",
+                    "حرف توكيد ونصب."
+                ],
+                answer: 0,
+                explanation: "ضمير نصب منفصل مفعول به مقدم وجوباً."
+            },
+            {
+                q: "إعراب (رَبَّهُ) في جملة: «خَافَ رَبَّهُ عُمَرُ»:",
+                options: [
+                    "مفعول به مقدم منصوب بالفتحة، والهاء مضاف إليه، وعمرُ فاعل مؤخر.",
+                    "فاعل مرفوع وعلامة رفعه الضمة.",
+                    "توكيد معنوي.",
+                    "بدل منصوب."
+                ],
+                answer: 0,
+                explanation: "ربه: مفعول به مقدم، وعمرُ: فاعل مؤخر مرفوع بالضمة."
+            },
+            {
+                q: "إعراب (الضُّلُوعُ) في جملة: «فَمَا بَقِيَتْ إِلاَّ الضُّلُوعُ»:",
+                options: [
+                    "فاعل مرفوع وعلامة رفعه الضمة الظاهرة.",
+                    "مفعول به منصوب.",
+                    "مستثنى منصوب.",
+                    "بدل من الفاعل."
+                ],
+                answer: 0,
+                explanation: "الكلام استثناء مفرغ، فالضلوع فاعل مرفوع بالضمة."
+            },
+            {
+                q: "إعراب (أَبُوهُ) في جملة: «زَيْدٌ قَامَ أَبُوهُ»:",
+                options: [
+                    "فاعل مرفوع وعلامة رفعه الواو لأنه من الأسماء الخمسة، والهاء مضاف إليه.",
+                    "مبتدأ ثانٍ مرفوع.",
+                    "خبر المبتدأ زيد.",
+                    "بدل مرفوع."
+                ],
+                answer: 0,
+                explanation: "أبوه: فاعل للفعل (قام) مرفوع بالواو والهاء مضاف إليه."
+            },
+            {
+                q: "إعراب المصدر المؤول (أَنْ تَقُومَ) في: «يَعْجِبُنِي أَنْ تَقُومَ»:",
+                options: [
+                    "في محل رفع فاعل للفعل (يعجب)، والتقدير: يعجبني قيامُك.",
+                    "في محل نصب مفعول به.",
+                    "في محل جر بحرف جر محذوف.",
+                    "لا محل له من الإعراب."
+                ],
+                answer: 0,
+                explanation: "المصدر المؤول في محل رفع فاعل."
+            },
+            {
+                q: "إعراب (مُوسَى) و(عِيسَى) في: «ضَرَبَ مُوسَى عِيسَى»:",
+                options: [
+                    "موسى: فاعل مرفوع بضمة مقدرة للتعذر / عيسى: مفعول به منصوب بفتحة مقدرة للتعذر.",
+                    "موسى: مفعول به / عيسى: فاعل.",
+                    "كلاهما مبتدأ وخبر.",
+                    "موسى: فاعل / عيسى: بدل."
+                ],
+                answer: 0,
+                explanation: "موسى فاعل وجوباً وعيسى مفعول وجوباً لمنع اللبس."
+            },
+            {
+                q: "إعراب (عَمْراً) و(زَيْدٌ) في جملة: «إِنَّمَا ضَرَبَ عَمْراً زَيْدٌ»:",
+                options: [
+                    "عمراً: مفعول به مقدم منصوب / زيدٌ: فاعل مؤخر مرفوع وهو المحصور بـ إنما.",
+                    "عمراً: فاعل / زيدٌ: مفعول به.",
+                    "عمراً: اسم إنما / زيدٌ: خبر إنما.",
+                    "عمراً: تمييز / زيدٌ: فاعل."
+                ],
+                answer: 0,
+                explanation: "عمراً مفعول به مقدم وزيد فاعل مؤخر محصور بإنما."
+            }
+        ];
+
+        // Global State variables
+        let questions = JSON.parse(localStorage.getItem('quiz_fael_questions')) || defaultQuestions;
+        let currentQuizQuestions = [];
+        let currentIndex = 0;
+        let userAnswers = {}; // { questionIndex: selectedOptionIndex }
+        let bookmarks = new Set();
+        let timerInterval = null;
+        let secondsElapsed = 0;
+
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('stat-total-q').innerText = questions.length;
+            renderEditorQuestions();
+        });
+
+        // Switch App View
+        function switchTab(tab) {
+            const playerView = document.getElementById('player-view');
+            const editorView = document.getElementById('editor-view');
+            const navPlayerBtn = document.getElementById('nav-player-btn');
+            const navEditorBtn = document.getElementById('nav-editor-btn');
+
+            if (tab === 'player') {
+                playerView.classList.remove('hidden');
+                editorView.classList.add('hidden');
+                navPlayerBtn.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors flex items-center gap-2";
+                navEditorBtn.className = "px-4 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-2";
+            } else {
+                playerView.classList.add('hidden');
+                editorView.classList.remove('hidden');
+                navEditorBtn.className = "px-4 py-2 text-sm font-semibold rounded-lg bg-brand-50 text-brand-700 hover:bg-brand-100 transition-colors flex items-center gap-2";
+                navPlayerBtn.className = "px-4 py-2 text-sm font-semibold rounded-lg text-slate-600 hover:bg-slate-100 transition-colors flex items-center gap-2";
+                renderEditorQuestions();
+            }
+        }
+
+        // Start Quiz Engine
+        function startQuiz(isRandomSubset = false) {
+            if (isRandomSubset) {
+                // Pick 25 random questions
+                const shuffled = [...questions].sort(() => 0.5 - Math.random());
+                currentQuizQuestions = shuffled.slice(0, 25);
+            } else {
+                currentQuizQuestions = [...questions];
+            }
+
+            currentIndex = 0;
+            userAnswers = {};
+            bookmarks.clear();
+            secondsElapsed = 0;
+
+            document.getElementById('quiz-start-card').classList.add('hidden');
+            document.getElementById('quiz-result-panel').classList.add('hidden');
+            document.getElementById('quiz-active-panel').classList.remove('hidden');
+
+            startTimer();
+            renderQuestion();
+            renderGridDrawer();
+        }
+
+        // Timer Control
+        function startTimer() {
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+                const secs = String(secondsElapsed % 60).padStart(2, '0');
+                document.getElementById('timer-display').innerText = `${mins}:${secs}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+        }
+
+        // Render Active Question
+        function renderQuestion() {
+            const qData = currentQuizQuestions[currentIndex];
+            const total = currentQuizQuestions.length;
+
+            // Badges & Progress
+            document.getElementById('q-counter-badge').innerText = `سؤال ${currentIndex + 1} من ${total}`;
+            const progPercent = ((currentIndex + 1) / total) * 100;
+            document.getElementById('progress-bar-fill').style.width = `${progPercent}%`;
+
+            // Question text
+            document.getElementById('question-text').innerText = `${currentIndex + 1}. ${qData.q}`;
+
+            // Bookmark icon state
+            const bmBtn = document.getElementById('bookmark-btn');
+            if (bookmarks.has(currentIndex)) {
+                bmBtn.className = "text-amber-500 hover:text-amber-600 transition-colors p-1";
+                bmBtn.innerHTML = `<i class="fa-solid fa-bookmark text-lg"></i>`;
+            } else {
+                bmBtn.className = "text-slate-400 hover:text-amber-500 transition-colors p-1";
+                bmBtn.innerHTML = `<i class="fa-regular fa-bookmark text-lg"></i>`;
+            }
+
+            // Options
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+
+            const selectedOpt = userAnswers[currentIndex];
+
+            qData.options.forEach((optText, idx) => {
+                const isSelected = selectedOpt === idx;
+
+                const optBtn = document.createElement('button');
+                optBtn.type = "button";
+                optBtn.onclick = () => selectOption(idx);
+
+                let baseClasses = "w-full p-4 text-right rounded-xl border text-sm sm:text-base font-semibold transition-all flex items-center justify-between gap-3 ";
+                if (isSelected) {
+                    baseClasses += "border-brand-600 bg-brand-50/80 text-brand-900 shadow-sm ring-1 ring-brand-600";
+                } else {
+                    baseClasses += "border-slate-200 hover:border-slate-300 hover:bg-slate-50 text-slate-800";
+                }
+
+                optBtn.className = baseClasses;
+                optBtn.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <span class="w-7 h-7 rounded-lg border ${isSelected ? 'border-brand-600 bg-brand-600 text-white' : 'border-slate-300 bg-slate-100 text-slate-600'} text-xs font-bold flex items-center justify-center">
+                            ${String.fromCharCode(65 + idx)}
+                        </span>
+                        <span>${optText}</span>
+                    </div>
+                    ${isSelected ? '<i class="fa-solid fa-circle-check text-brand-600 text-lg"></i>' : '<i class="fa-regular fa-circle text-slate-300 text-lg"></i>'}
+                `;
+                container.appendChild(optBtn);
+            });
+
+            // Footer navigation buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const finishBtn = document.getElementById('finish-btn');
+
+            prevBtn.disabled = currentIndex === 0;
+
+            if (currentIndex === total - 1) {
+                nextBtn.classList.add('hidden');
+                finishBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                finishBtn.classList.add('hidden');
+            }
+
+            updateGridDrawerState();
+        }
+
+        // Option Selection Handler
+        function selectOption(optIdx) {
+            userAnswers[currentIndex] = optIdx;
+            renderQuestion();
+            updateGridDrawerState();
+        }
+
+        // Question Navigation
+        function navigateQuestion(step) {
+            const nextIdx = currentIndex + step;
+            if (nextIdx >= 0 && nextIdx < currentQuizQuestions.length) {
+                currentIndex = nextIdx;
+                renderQuestion();
+            }
+        }
+
+        function jumpToQuestion(index) {
+            currentIndex = index;
+            renderQuestion();
+        }
+
+        // Bookmark Handler
+        function toggleBookmarkCurrent() {
+            if (bookmarks.has(currentIndex)) {
+                bookmarks.delete(currentIndex);
+            } else {
+                bookmarks.add(currentIndex);
+            }
+            renderQuestion();
+            updateGridDrawerState();
+        }
+
+        // Render Drawer Grid
+        function renderGridDrawer() {
+            const grid = document.getElementById('questions-grid');
+            grid.innerHTML = '';
+
+            currentQuizQuestions.forEach((_, idx) => {
+                const btn = document.createElement('button');
+                btn.id = `grid-btn-${idx}`;
+                btn.onclick = () => jumpToQuestion(idx);
+                btn.className = "w-9 h-9 text-xs font-bold rounded-lg border transition-all flex items-center justify-center";
+                btn.innerText = idx + 1;
+                grid.appendChild(btn);
+            });
+
+            updateGridDrawerState();
+        }
+
+        function updateGridDrawerState() {
+            const total = currentQuizQuestions.length;
+            let answeredCount = 0;
+
+            currentQuizQuestions.forEach((_, idx) => {
+                const btn = document.getElementById(`grid-btn-${idx}`);
+                if (!btn) return;
+
+                const isAnswered = userAnswers[idx] !== undefined;
+                const isBookmarked = bookmarks.has(idx);
+                const isCurrent = idx === currentIndex;
+
+                if (isAnswered) answeredCount++;
+
+                let btnStyle = "";
+                if (isCurrent) {
+                    btnStyle = "ring-2 ring-slate-900 border-slate-900 font-extrabold ";
+                } else {
+                    btnStyle = "border-transparent ";
+                }
+
+                if (isBookmarked) {
+                    btnStyle += "bg-amber-500 text-white font-bold";
+                } else if (isAnswered) {
+                    btnStyle += "bg-brand-600 text-white font-bold";
+                } else {
+                    btnStyle += "bg-slate-100 text-slate-700 hover:bg-slate-200";
+                }
+
+                btn.className = `w-9 h-9 text-xs rounded-lg border transition-all flex items-center justify-center ${btnStyle}`;
+            });
+
+            document.getElementById('answered-count-badge').innerText = `${answeredCount} / ${total}`;
+        }
+
+        // Submit Quiz & Show Result
+        function confirmFinishQuiz() {
+            const total = currentQuizQuestions.length;
+            const answered = Object.keys(userAnswers).length;
+
+            if (answered < total) {
+                const confirmChoice = confirm(`لقد أجبت على ${answered} من أصل ${total} أسئلة.\nهل أنت أفرغ من إكمال الاختبار وتريد إنهاءه والاطلاع على النتيجة؟`);
+                if (!confirmChoice) return;
+            }
+
+            stopTimer();
+            calculateAndShowResults();
+        }
+
+        // Results calculation and UI Rendering
+        function calculateAndShowResults() {
+            document.getElementById('quiz-active-panel').classList.add('hidden');
+            document.getElementById('quiz-result-panel').classList.remove('hidden');
+
+            let score = 0;
+            const total = currentQuizQuestions.length;
+
+            currentQuizQuestions.forEach((q, idx) => {
+                if (userAnswers[idx] === q.answer) {
+                    score++;
+                }
+            });
+
+            const percentage = Math.round((score / total) * 100);
+
+            // Set text score
+            document.getElementById('final-percentage').innerText = `${percentage}%`;
+            document.getElementById('score-text').innerText = `${score} من أصل ${total}`;
+
+            // Time spent
+            const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+            const secs = String(secondsElapsed % 60).padStart(2, '0');
+            document.getElementById('res-time-spent').innerText = `الوقت المستغرق: ${mins}:${secs}`;
+
+            // Appraisal
+            const titleEl = document.getElementById('appraisal-title');
+            const descEl = document.getElementById('appraisal-desc');
+            const circleEl = document.getElementById('score-circle');
+            const badgeBg = document.getElementById('result-badge-bg');
+
+            if (percentage >= 90) {
+                titleEl.innerText = "ممتاز جداً! أداء استثنائي 👏";
+                descEl.innerText = "ما شاء الله! لديك إلمام تام بدقائق وأحكام باب الفاعل والشواهد النحوية.";
+                circleEl.className = "relative flex items-center justify-center w-36 h-36 rounded-full border-8 border-brand-500 bg-brand-50 text-brand-900";
+                badgeBg.className = "absolute top-0 right-0 left-0 h-3 bg-brand-600";
+            } else if (percentage >= 75) {
+                titleEl.innerText = "تقدير جيد جداً! أحسنت 🌟";
+                descEl.innerText = "مستوى متقدم ووعي ممتاز بقواعد الفاعل النحوية، مع وجود فرص بسيطة للمراجعة.";
+                circleEl.className = "relative flex items-center justify-center w-36 h-36 rounded-full border-8 border-blue-500 bg-blue-50 text-blue-900";
+                badgeBg.className = "absolute top-0 right-0 left-0 h-3 bg-blue-600";
+            } else if (percentage >= 50) {
+                titleEl.innerText = "تقدير مقبول! واصل المذاكرة 👍";
+                descEl.innerText = "استطعت الإجابة على أكثر من نصف الأسئلة، نقترح مراجعة الشواهد والحالات الاستثنائية.";
+                circleEl.className = "relative flex items-center justify-center w-36 h-36 rounded-full border-8 border-amber-500 bg-amber-50 text-amber-900";
+                badgeBg.className = "absolute top-0 right-0 left-0 h-3 bg-amber-600";
+            } else {
+                titleEl.innerText = "يحتاج إلى مراجعة وتدريب 📚";
+                descEl.innerText = "راجع شروح باب الفاعل من الأجرومية أو ألفية ابن مالك وأعد الاختبار مرة أخرى لتثبيت المعلومات.";
+                circleEl.className = "relative flex items-center justify-center w-36 h-36 rounded-full border-8 border-rose-500 bg-rose-50 text-rose-900";
+                badgeBg.className = "absolute top-0 right-0 left-0 h-3 bg-rose-600";
+            }
+
+            // Render detailed Review List
+            const reviewContainer = document.getElementById('review-questions-list');
+            reviewContainer.innerHTML = '';
+
+            currentQuizQuestions.forEach((q, idx) => {
+                const userChoice = userAnswers[idx];
+                const isCorrect = userChoice === q.answer;
+                const isUnanswered = userChoice === undefined;
+
+                const card = document.createElement('div');
+                let borderClass = isCorrect ? 'border-brand-200 bg-brand-50/30' : 'border-rose-200 bg-rose-50/30';
+                if (isUnanswered) borderClass = 'border-amber-200 bg-amber-50/30';
+
+                card.className = `p-5 rounded-2xl border ${borderClass} bg-white shadow-sm space-y-3`;
+
+                let statusBadge = '';
+                if (isCorrect) {
+                    statusBadge = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-brand-100 text-brand-800 flex items-center gap-1"><i class="fa-solid fa-check"></i> إجابة صحيحة</span>`;
+                } else if (isUnanswered) {
+                    statusBadge = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 flex items-center gap-1"><i class="fa-solid fa-minus"></i> لم تُجب عليه</span>`;
+                } else {
+                    statusBadge = `<span class="px-3 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800 flex items-center gap-1"><i class="fa-solid fa-xmark"></i> إجابة خاطئة</span>`;
+                }
+
+                let optionsHTML = '';
+                q.options.forEach((opt, optI) => {
+                    let optBg = "bg-slate-50 border-slate-200 text-slate-700";
+                    let optIcon = '';
+
+                    if (optI === q.answer) {
+                        optBg = "bg-brand-100 border-brand-300 text-brand-900 font-bold";
+                        optIcon = '<i class="fa-solid fa-circle-check text-brand-600 ms-auto"></i> (الإجابة النموذجية)';
+                    } else if (optI === userChoice && !isCorrect) {
+                        optBg = "bg-rose-100 border-rose-300 text-rose-900 font-bold";
+                        optIcon = '<i class="fa-solid fa-circle-xmark text-rose-600 ms-auto"></i> (إجابتك)';
+                    }
+
+                    optionsHTML += `
+                        <div class="p-3 rounded-xl border text-sm flex items-center gap-2 ${optBg}">
+                            <span class="w-6 h-6 rounded bg-white border text-xs font-bold flex items-center justify-center shrink-0">
+                                ${String.fromCharCode(65 + optI)}
+                            </span>
+                            <span>${opt}</span>
+                            ${optIcon}
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex items-start justify-between gap-3 border-b pb-3 border-slate-100">
+                        <h4 class="font-bold text-slate-900 text-base">س ${idx + 1}: ${q.q}</h4>
+                        ${statusBadge}
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        ${optionsHTML}
+                    </div>
+
+                    ${q.explanation ? `
+                        <div class="mt-2 p-3 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-xs leading-relaxed">
+                            <span class="font-bold text-slate-900 block mb-0.5"><i class="fa-solid fa-lightbulb text-amber-500 me-1"></i> الشرح والتوضيح:</span>
+                            ${q.explanation}
+                        </div>
+                    ` : ''}
+                `;
+
+                reviewContainer.appendChild(card);
+            });
+        }
+
+        // ================= EDITOR FUNCTIONS =================
+        function renderEditorQuestions() {
+            document.getElementById('editor-q-count').innerText = `${questions.length} سؤال`;
+            const container = document.getElementById('editor-questions-container');
+            container.innerHTML = '';
+
+            questions.forEach((q, idx) => {
+                const item = document.createElement('div');
+                item.className = "p-4 border border-slate-200 rounded-xl bg-slate-50 flex items-center justify-between gap-4";
+                item.innerHTML = `
+                    <div class="space-y-1">
+                        <div class="font-bold text-sm text-slate-900">${idx + 1}. ${q.q}</div>
+                        <div class="text-xs text-slate-500">الإجابة الصحيحة: الخيار (${String.fromCharCode(65 + q.answer)}) - ${q.options[q.answer]}</div>
+                    </div>
+                    <button onclick="deleteQuestion(${idx})" class="text-rose-500 hover:text-rose-700 p-2 text-sm" title="حذف السؤال">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        function addNewQuestionFromEditor() {
+            const qText = document.getElementById('ed-q-text').value.trim();
+            const opt0 = document.getElementById('ed-opt-0').value.trim();
+            const opt1 = document.getElementById('ed-opt-1').value.trim();
+            const opt2 = document.getElementById('ed-opt-2').value.trim();
+            const opt3 = document.getElementById('ed-opt-3').value.trim();
+            const correctIdx = parseInt(document.getElementById('ed-correct-idx').value);
+            const explanation = document.getElementById('ed-explanation').value.trim();
+
+            if (!qText || !opt0 || !opt1) {
+                alert('الرجاء إدخال نص السؤال والخيارين الأول والثاني على الأقل.');
+                return;
+            }
+
+            const options = [opt0, opt1];
+            if (opt2) options.push(opt2);
+            if (opt3) options.push(opt3);
+
+            const newQ = {
+                q: qText,
+                options: options,
+                answer: correctIdx < options.length ? correctIdx : 0,
+                explanation: explanation
+            };
+
+            questions.push(newQ);
+            saveQuestionsToStorage();
+            renderEditorQuestions();
+
+            // Clear inputs
+            document.getElementById('ed-q-text').value = '';
+            document.getElementById('ed-opt-0').value = '';
+            document.getElementById('ed-opt-1').value = '';
+            document.getElementById('ed-opt-2').value = '';
+            document.getElementById('ed-opt-3').value = '';
+            document.getElementById('ed-explanation').value = '';
+
+            alert('تم حفظ السؤال بنجاح!');
+        }
+
+        function deleteQuestion(idx) {
+            if (confirm('هل أنت تأكد من رغبتك في حذف هذا السؤال؟')) {
+                questions.splice(idx, 1);
+                saveQuestionsToStorage();
+                renderEditorQuestions();
+            }
+        }
+
+        function saveQuestionsToStorage() {
+            localStorage.setItem('quiz_fael_questions', JSON.stringify(questions));
+            document.getElementById('stat-total-q').innerText = questions.length;
+        }
+
+        function exportQuizJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(questions, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "اختبار_باب_الفاعل.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importQuizJSON(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        questions = importedData;
+                        saveQuestionsToStorage();
+                        renderEditorQuestions();
+                        alert('تم استيراد الأسئلة بنجاح!');
+                    } else {
+                        alert('تنسيق ملف JSON غير صالح.');
+                    }
+                } catch (err) {
+                    alert('خطأ في قراءة ملف JSON.');
+                }
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+</html>
